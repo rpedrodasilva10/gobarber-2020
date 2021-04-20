@@ -12,7 +12,7 @@ const appointmentsRouter = Router();
 appointmentsRouter.post('/', async (request, response) => {
   const appointmentsRepository = getCustomRepository(AppointmentsRepository);
   const createAppointmentService = new CreateAppointmentService();
-  const { date, provider } = request.body;
+  const { date, provider_id } = request.body;
 
   const parsedDate = startOfHour(parseISO(date));
 
@@ -24,7 +24,7 @@ appointmentsRouter.post('/', async (request, response) => {
 
   const newAppointment = await createAppointmentService.execute({
     date: parsedDate,
-    provider,
+    provider_id,
   });
 
   return response
