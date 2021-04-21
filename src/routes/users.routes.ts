@@ -14,32 +14,24 @@ const upload = multer(uploadConfig);
  * Create a new user
  */
 usersRouter.post('/', async (request, response) => {
-  try {
-    const createUserService = new CreateUserService();
+  const createUserService = new CreateUserService();
 
-    const { name, password, email }: User = request.body;
+  const { name, password, email }: User = request.body;
 
-    const user = await createUserService.execute({ name, password, email });
+  const user = await createUserService.execute({ name, password, email });
 
-    return response.status(201).json(user);
-  } catch (err) {
-    response.status(400).json({ message: 'Could not create user', error: err.message });
-  }
+  return response.status(201).json(user);
 });
 
 usersRouter.patch('/avatar', enforceAuthentication, upload.single('avatar'), async (request, response) => {
-  try {
-    const updateUserAvatarService = new UpdateUserAvatarService();
+  const updateUserAvatarService = new UpdateUserAvatarService();
 
-    const updatedUser = await updateUserAvatarService.execute({
-      userId: request.user.id,
-      avatarFileName: request.file.filename,
-    });
+  const updatedUser = await updateUserAvatarService.execute({
+    userId: request.user.id,
+    avatarFileName: request.file.filename,
+  });
 
-    return response.json(updatedUser);
-  } catch (err) {
-    response.status(400).json({ message: 'Could not update user avatar', error: err.message });
-  }
+  return response.json(updatedUser);
 });
 
 export default usersRouter;

@@ -17,14 +17,13 @@ appointmentsRouter.use(enforceAuthentication);
 appointmentsRouter.post('/', async (request, response) => {
   const appointmentsRepository = getCustomRepository(AppointmentsRepository);
   const createAppointmentService = new CreateAppointmentService();
+
   const { date, provider_id } = request.body;
 
   const parsedDate = startOfHour(parseISO(date));
 
   if (await appointmentsRepository.isAlreadyBookedHour(parsedDate)) {
-    return response
-      .status(400)
-      .json({ message: 'Date already busy!', data: date });
+    return response.status(400).json({ message: 'Date already busy!', data: date });
   }
 
   const newAppointment = await createAppointmentService.execute({
@@ -32,17 +31,15 @@ appointmentsRouter.post('/', async (request, response) => {
     provider_id,
   });
 
-  return response
-    .status(201)
-    .json({ message: 'Successfully created', data: newAppointment });
+  return response.status(201).json({ message: 'Successfully created', data: newAppointment });
 });
 
 /**
  * Get all appointments
  */
 appointmentsRouter.get('/', async (request, response) => {
-  console.log(request.user);
   const appointmentsRepository = getCustomRepository(AppointmentsRepository);
+
   return response.json(await appointmentsRepository.find());
 });
 

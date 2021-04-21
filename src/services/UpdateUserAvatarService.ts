@@ -5,6 +5,7 @@ import fs from 'fs';
 import User from '../models/User';
 
 import uploadConfig from '../config/upload';
+import AppError from '../errors/AppError';
 
 interface UpdateUserAvatarRequest {
   userId: string;
@@ -18,7 +19,7 @@ class UpdateUserAvatarService {
     const user = await userRepository.findOne(userId);
 
     if (!user) {
-      throw new Error('Must be authenticated to execute this operation');
+      throw new AppError('Must be authenticated to execute this operation', 401);
     }
 
     // Deleta avatar 'antigo', caso exista
@@ -33,7 +34,6 @@ class UpdateUserAvatarService {
 
     user.avatar = avatarFileName;
 
-  
     await userRepository.save(user);
 
     delete user.password;

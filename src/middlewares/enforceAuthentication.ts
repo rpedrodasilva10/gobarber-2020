@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 import authConfig from '../config/auth';
+import AppError from '../errors/AppError';
 
 interface TokenPayload {
   iat: number;
@@ -8,27 +9,19 @@ interface TokenPayload {
   sub: string;
 }
 
-export default function enforceAuthentication(
-  request: Request,
-  response: Response,
-  next: NextFunction
-) {
+export default function enforceAuthentication(request: Request, response: Response, next: NextFunction) {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {
-    throw new Error('Authorization header is missing!');
+    throw new AppError('Authorization header is missing!', 401);
   }
 
-  try {
-    const [, token] = authHeader.split(' ');
-    const { sub } = verify(token, authConfig.jwt.secret) as TokenPayload;
+  const [, token] = authHeader.split(' ');
+  const { sub } = verify(token, authConfig.jwt.secret) as TokenPayload;
 
-    request.user = {
-      id: sub,
-    };
+  request.user = {
+    id: sub,
+  };
 
-    return next();
-  } catch (err) {
-    throw new Error('Error decoding token');
-  }
+  return next();
 }
